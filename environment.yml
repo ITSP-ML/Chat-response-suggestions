@@ -1,0 +1,12 @@
+name: Chat response suggestions
+channels:
+  - conda-forge
+  - defaults
+dependencies:
+  - python=3.9 
+  - requests==2.27.1
+  - pip:
+    - -e .  # make the project editable package, conda >= 4.4 only
+    - --trusted-host pypi.python.org --trusted-host pypi.org --trusted-host files.pythonhosted.org # to avoid problems with proxies
+    
+  
