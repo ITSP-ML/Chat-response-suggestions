@@ -8,6 +8,7 @@
 
 # data excluded from source control
 data_dump/
+models/
 
 # never commit notebooks - convert them to .py first
 *.ipynb
