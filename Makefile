@@ -12,7 +12,7 @@ PROJECT_NAME = Chat-response-suggestions
 
 #update the environment after manually changing environment.yml
 environment.lock.yml: environment.yml
-	conda env create -n $(PROJECT_NAME) -f $< --force
+	conda env update -n $(PROJECT_NAME) -f $< --prune
 	conda env export -n $(PROJECT_NAME) | grep -v "^prefix: " > $@  
 
 
