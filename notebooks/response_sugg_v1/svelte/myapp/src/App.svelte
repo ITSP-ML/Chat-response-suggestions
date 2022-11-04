@@ -31,7 +31,7 @@
   maxItemsToShowInList={10}
   delay={300}
   localFiltering={false}
-  lowercaseKeywords={true}
+  cleanUserText={false}
 />
 <!-- <script>
   import AutoComplete from "simple-svelte-autocomplete";
