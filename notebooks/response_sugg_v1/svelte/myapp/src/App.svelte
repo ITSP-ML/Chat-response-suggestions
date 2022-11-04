@@ -38,6 +38,7 @@
   localFiltering={false}
   cleanUserText={false}
   hideArrow={true}
+  minCharactersToSearch={0}
   style="width:1000px;">
     <div slot="item" let:item let:label>
       {@html item.sugg.replace(' ', '<span style="color:lightblue">_</span>')}
