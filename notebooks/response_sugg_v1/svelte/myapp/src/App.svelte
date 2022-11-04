@@ -28,7 +28,7 @@
   searchFunction={get_suggestions_list}
   bind:selectedItem={selectedSugg}
   keywordsFieldName="sugg"
-  labelFunction={suggestion => suggestion.sugg}
+  labelFunction={suggestion => suggestion.prefix + ' ' + suggestion.sugg}
   maxItemsToShowInList={10}
   delay={200}
   localFiltering={false}
@@ -36,7 +36,7 @@
   hideArrow={true}
   style="width:1000px;">
     <div slot="item" let:item let:label>
-      {@html label}
+      {@html item.sugg}
       <!-- to render the default highlighted item label -->
       <!-- render anything else -->
       <i style="color:grey">({(100*item.prob).toFixed(2)}%)</i>
