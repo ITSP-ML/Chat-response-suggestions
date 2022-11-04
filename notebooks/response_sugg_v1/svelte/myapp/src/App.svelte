@@ -17,6 +17,10 @@
     return response.json();
   }
 
+  function format_label(suggestion) {
+    return suggestion.prefix + suggestion.sugg
+  }
+
 //  function onKeyDown(e) {
 //    if (e.key == 'Tab') {
 //
@@ -28,7 +32,7 @@
   searchFunction={get_suggestions_list}
   bind:selectedItem={selectedSugg}
   keywordsFieldName="sugg"
-  labelFunction={suggestion => suggestion.prefix + ' ' + suggestion.sugg}
+  labelFunction={format_label}
   maxItemsToShowInList={10}
   delay={200}
   localFiltering={false}
@@ -36,7 +40,7 @@
   hideArrow={true}
   style="width:1000px;">
     <div slot="item" let:item let:label>
-      {@html item.sugg}
+      {@html item.sugg.replace(' ', '<span style="color:lightblue">_</span>')}
       <!-- to render the default highlighted item label -->
       <!-- render anything else -->
       <i style="color:grey">({(100*item.prob).toFixed(2)}%)</i>
