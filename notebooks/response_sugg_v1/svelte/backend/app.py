@@ -1,22 +1,8 @@
 from fastapi import FastAPI
-from flask import jsonify
 from pydantic import BaseModel
 from fastapi.middleware.cors import CORSMiddleware
-import pandas as pd
-import set_cwd
-import re
-from utils import match_suggs, rank_suggs
 
-
-# data = pd.read_csv("data_dump/response_sugg/data_v1.csv")
-dataset = pd.read_csv("data_dump/response_sugg/x.csv")
-
-
-# agent_msgs = []
-# for msg in agent_unique:
-#     splited = re.split(". |, |;|\n|\? |\! ", msg)
-#     agent_msgs.extend(splited)
-
+from src.autocomplete_preprocess import get_agent_msgs, get_probable_continuations
 
 app = FastAPI()
 
@@ -30,19 +16,12 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-
 class Item(BaseModel):
     text: str
 
-
 @app.post("/")
 async def root(data: Item):
-    print(data.text)
-    # print prefix
-    prefix = str(data.text).lower()
-    print("prefix: ", prefix)  # PREFIX
-    # match prefix to suggestions
-    unsorted_suggs = match_suggs(prefix, dataset)
-    final_suggs = rank_suggs(unsorted_suggs)
-
-    return [{"sugg": x} for x in final_suggs]  # desired output shape for the frontend
+    prefix = data.text.lower()
+    agent_msgs = get_agent_msgs()
+    suggestions = get_probable_continuations(prefix, agent_msgs)
+    return [{"sugg": sugg, "prob": row["prob"]} for sugg, row in suggestions.iterrows()]

@@ -1,9 +1,8 @@
 <script>
   import AutoComplete from "simple-svelte-autocomplete";
-  let selectedCountry;
+  let selectedSugg;
 
   async function get_suggestions_list(keyword) {
-    // let x = JSON.stringify({ text: "P" });
     let data = { text: keyword };
     const url = "http://127.0.0.1:8000/";
     const response = await fetch(url, {
@@ -16,14 +15,21 @@
     });
     return response.json();
   }
+
+//  function onKeyDown(e) {
+//    if (e.key == 'Tab') {
+//
+//    }
+//  }
 </script>
 
 <AutoComplete
   searchFunction={get_suggestions_list}
-  bind:selectedItem={selectedCountry}
-  labelFieldName="sugg"
+  bind:selectedItem={selectedSugg}
+  keywordsFieldName="sugg"
+  labelFunction={suggestion => `${suggestion.sugg} (${(100*suggestion.prob).toFixed(2)}%)`}
   maxItemsToShowInList={10}
-  delay={200}
+  delay={300}
   localFiltering={false}
   lowercaseKeywords={true}
 />
