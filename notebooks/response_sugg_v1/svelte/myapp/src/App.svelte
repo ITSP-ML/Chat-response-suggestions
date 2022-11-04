@@ -32,4 +32,5 @@
   maxItemsToShowInList={10}
   delay={300}
   localFiltering={false}
+  cleanUserText={false}
 />
