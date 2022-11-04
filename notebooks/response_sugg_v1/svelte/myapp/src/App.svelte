@@ -32,7 +32,7 @@
   bind:selectedItem={selectedSugg}
   keywordsFieldName="sugg"
   labelFunction={format_label}
-  maxItemsToShowInList={10}
+  maxItemsToShowInList={50}
   delay={200}
   localFiltering={false}
   cleanUserText={false}
