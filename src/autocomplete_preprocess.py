@@ -16,9 +16,13 @@ def get_probable_continuations(prefix, candidate_msgs, prob_threshold=0.02):
     continuations = candidate_msgs[candidate_msgs.msg.str.lower().str.startswith(prefix.lower())]
     # take only the continuations after prefix
     continuations.msg = continuations.msg.str[len(prefix):]
+    split_initial_non_word_chars = continuations.msg.str.extract(r'^(\W*)(.*)')
+    continuations.msg = split_initial_non_word_chars[1]
+    continuations['non_word_chars'] = split_initial_non_word_chars[0]
 
     # get the first words of continuations
-    continuations['next_word'] = continuations.msg.str.split().str[0]
+    continuations['next_word'] = continuations.non_word_chars + continuations.msg.str.split(r'\W',
+                                                                                            regex=True).str[0]
 
     # compute frequencies/probabilities of next words
     nexts = pd.DataFrame(continuations.groupby('next_word')['count'].sum().sort_values(ascending=False))
