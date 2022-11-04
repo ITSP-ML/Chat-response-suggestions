@@ -30,9 +30,11 @@
   keywordsFieldName="sugg"
   labelFunction={suggestion => suggestion.sugg}
   maxItemsToShowInList={10}
-  delay={300}
+  delay={200}
   localFiltering={false}
-  cleanUserText={false}>
+  cleanUserText={false}
+  hideArrow={true}
+  style="width:1000px;">
     <div slot="item" let:item let:label>
       {@html label}
       <!-- to render the default highlighted item label -->
