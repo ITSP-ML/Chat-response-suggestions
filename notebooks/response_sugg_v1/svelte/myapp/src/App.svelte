@@ -27,31 +27,18 @@
   searchFunction={get_suggestions_list}
   bind:selectedItem={selectedSugg}
   keywordsFieldName="sugg"
-  labelFunction={suggestion => `${suggestion.sugg} (${(100*suggestion.prob).toFixed(2)}%)`}
+  labelFunction={suggestion => suggestion.sugg}
   maxItemsToShowInList={10}
   delay={300}
   localFiltering={false}
-  cleanUserText={false}
-/>
-<!-- <script>
-  import AutoComplete from "simple-svelte-autocomplete";
-  let selectedCountry;
-  async function searchCountry(keyword) {
-    const url =
-      "https://restcountries.com/v2/name/" +
-      encodeURIComponent(keyword) +
-      "?fields=name;alpha2Code";
-
-    const response = await fetch(url);
-    return await response.json();
-  }
-</script>
-
-<AutoComplete
-  searchFunction={searchCountry}
-  bind:selectedItem={selectedCountry}
-  labelFieldName="name"
-  maxItemsToShowInList={10}
-  delay={200}
-  localFiltering={false}
-/> -->
+  cleanUserText={false}>
+    <div slot="item" let:item let:label>
+      {@html label}
+      <!-- to render the default highlighted item label -->
+      <!-- render anything else -->
+      <i style="color:grey">({(100*item.prob).toFixed(2)}%)</i>
+    </div>
+    <div slot="loading" let:loadingText>
+        <i style="color:grey">searching for suggestions</i>
+    </div>
+</AutoComplete>
