@@ -28,9 +28,18 @@
   searchFunction={get_suggestions_list}
   bind:selectedItem={selectedSugg}
   keywordsFieldName="sugg"
-  labelFunction={suggestion => `${suggestion.sugg} (${(100*suggestion.prob).toFixed(2)}%)`}
+  labelFunction={suggestion => suggestion.sugg}
   maxItemsToShowInList={10}
   delay={300}
   localFiltering={false}
-  cleanUserText={false}
-/>
+  cleanUserText={false}>
+    <div slot="item" let:item let:label>
+      {@html label}
+      <!-- to render the default highlighted item label -->
+      <!-- render anything else -->
+      <i style="color:grey">({(100*item.prob).toFixed(2)}%)</i>
+    </div>
+    <div slot="loading" let:loadingText>
+        <i style="color:grey">searching for suggestions</i>
+    </div>
+</AutoComplete>
