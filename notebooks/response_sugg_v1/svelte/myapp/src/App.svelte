@@ -40,7 +40,7 @@
   minCharactersToSearch={0}
   style="width:1000px;">
     <div slot="item" let:item let:label>
-      {@html item.sugg.replace(' ', '<span style="color:lightblue">_</span>')}
+      {@html item.sugg.replaceAll(' ', '<span style="color:lightblue">_</span>')}
       <!-- to render the default highlighted item label -->
       <!-- render anything else -->
       <i style="color:grey">({(100*item.prob).toFixed(2)}%)</i>
