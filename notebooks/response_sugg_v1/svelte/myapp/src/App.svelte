@@ -1,6 +1,7 @@
 <script>
   import AutoComplete from "simple-svelte-autocomplete";
   let selectedSugg;
+  let msgInputId = "msgInput";
 
   async function get_suggestions_list(keyword) {
     let data = { text: keyword };
@@ -21,14 +22,27 @@
     return suggestion.prefix + suggestion.sugg
   }
 
-//  function onKeyDown(e) {
-//    if (e.key == 'Tab') {
-//
-//    }
-//  }
+  function recomputeSuggestions() {    
+    let msgInput = document.getElementById(msgInputId);
+    if (msgInput) {
+      let evtClick = new Event(`input`, {bubbles: true});
+      setTimeout(() => {
+        // simulate input event to rerun suggestions search
+        msgInput.dispatchEvent(evtClick);
+        // focus the input field
+        msgInput.focus();
+        // set cursor to the end to allow user seamlessly continue typing
+        let val = msgInput.value;
+        msgInput.value = '';
+        msgInput.value = val;
+      }, 0)      
+    }
+  }
+
 </script>
 
 <AutoComplete
+  inputId={msgInputId}
   searchFunction={get_suggestions_list}
   bind:selectedItem={selectedSugg}
   keywordsFieldName="sugg"
@@ -39,7 +53,10 @@
   cleanUserText={false}
   hideArrow={true}
   minCharactersToSearch={0}
-  style="width:1000px;">
+  style="width:1000px;"
+  onChange={recomputeSuggestions}
+  debug={false}
+  >
     <div slot="item" let:item let:label>
       {@html item.sugg.replaceAll(' ', '<span style="color:lightblue">_</span>')}
       <!-- to render the default highlighted item label -->
