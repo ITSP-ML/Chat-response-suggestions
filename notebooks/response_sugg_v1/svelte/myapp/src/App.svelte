@@ -34,7 +34,7 @@
   keywordsFieldName="sugg"
   labelFunction={format_label}
   maxItemsToShowInList={50}
-  delay={200}
+  delay={100}
   localFiltering={false}
   cleanUserText={false}
   hideArrow={true}

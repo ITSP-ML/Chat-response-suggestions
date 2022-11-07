@@ -31,6 +31,6 @@ class Item(BaseModel):
 @app.post("/")
 async def root(data: Item):
     prefix = data.text
-    suggestions = get_probable_continuations(prefix, agent_msgs, prob_threshold=0.02, max_n=10)
+    suggestions = get_probable_continuations(prefix, agent_msgs, prob_threshold=0.02, max_n=5)
     return [{"prefix": prefix, "sugg": sugg, "prob": row["prob"]} for sugg,
                                                                  row in suggestions.iterrows()]
