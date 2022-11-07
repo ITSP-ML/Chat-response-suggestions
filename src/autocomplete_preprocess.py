@@ -2,6 +2,9 @@ import pandas as pd
 
 import set_cwd
 
+# turn off chained_assignment warnings
+pd.options.mode.chained_assignment = None  # default='warn'
+
 def get_agent_msgs():
     data = pd.read_csv("data_dump/response_sugg/data_v1.csv")
     data = data.dropna()
@@ -15,8 +18,8 @@ def get_probable_continuations(prefix, candidate_msgs, prob_threshold=0.02, cond
                                max_n=9999):
     #print(f'Function called with: prefix={prefix}, prob_threshold={prob_threshold}. '
     #      f'conditional_prob={conditional_prob}, max_n={max_n}')
-    if max_n <=0:
-        return pd.DataFrame(columns=['count','prob'])
+    if max_n <= 0:
+        return pd.DataFrame(columns=['count', 'prob'])
     # filter out messages that start with prefix
     continuations = candidate_msgs[candidate_msgs.msg.str.lower().str.startswith(prefix.lower())]
     # take only the continuations after prefix
