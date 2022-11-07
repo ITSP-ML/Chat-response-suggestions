@@ -8,6 +8,7 @@ pd.options.mode.chained_assignment = None  # default='warn'
 def get_agent_msgs():
     data = pd.read_csv("data_dump/response_sugg/data_v1.csv")
     data = data.dropna()
+    data.msg = data.msg.str.replace('\n', ' ')
 
     agent_msgs = data[data.user_id > 0].msg.value_counts().reset_index()
     agent_msgs.columns = ['msg', 'count']
