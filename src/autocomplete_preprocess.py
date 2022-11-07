@@ -32,13 +32,15 @@ def get_probable_continuations(prefix, candidate_msgs, prob_threshold=0.02, cond
     # get the first words of continuations
     continuations['next_word'] = continuations.non_word_chars + continuations.stripped_msg.str.split(r'\W', regex=True).str[0]
 
-    # compute frequencies/probabilities of next words
+    # compute frequencies of next words
     nexts = pd.DataFrame(continuations.groupby('next_word')['count'].sum().sort_values(ascending=False))
+    # remove empty nexts (end of message reached)
+    nexts = nexts.drop(index='', errors='ignore')
+    # compute probabilities of next words
     nexts['prob'] = (nexts['count']/nexts['count'].sum())*conditional_prob
+
     # remove improbable next words
     nexts = nexts[nexts.prob >= prob_threshold]
-    # remove empty nexts (no more suggestions)
-    nexts = nexts.drop(index='', errors='ignore')
 
     #print('Nexts computed:')
     #print(nexts)
