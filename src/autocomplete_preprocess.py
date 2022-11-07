@@ -17,10 +17,6 @@ def get_agent_msgs():
 
 def get_probable_continuations(prefix, candidate_msgs, prob_threshold=0.02, conditional_prob=1,
                                max_n=9999):
-    #print(f'Function called with: prefix={prefix}, prob_threshold={prob_threshold}. '
-    #      f'conditional_prob={conditional_prob}, max_n={max_n}')
-    if max_n <= 0:
-        return pd.DataFrame(columns=['count', 'prob'])
     # filter out messages that start with prefix
     continuations = candidate_msgs[candidate_msgs.msg.str.lower().str.startswith(prefix.lower())]
     # take only the continuations after prefix
@@ -36,6 +32,13 @@ def get_probable_continuations(prefix, candidate_msgs, prob_threshold=0.02, cond
     nexts = pd.DataFrame(continuations.groupby('next_word')['count'].sum().sort_values(ascending=False))
     # remove empty nexts (end of message reached)
     nexts = nexts.drop(index='', errors='ignore')
+
+    # if the maximal length of remaining suggestion drops to or below 0,
+    # we only continue further if the next word is unique
+    # otherwise we stop and return no possible continuations
+    if (max_n <= 0) and (len(nexts)>1):
+        return pd.DataFrame(columns=['count', 'prob'])
+
     # compute probabilities of next words
     nexts['prob'] = (nexts['count']/nexts['count'].sum())*conditional_prob
 
