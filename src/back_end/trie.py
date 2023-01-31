@@ -1,7 +1,7 @@
 class TrieNode:
     """A node in the trie structure"""
 
-    def __init__(self, char):
+    def __init__(self, char, is_ngrame):
         # the character stored in this node
         self.char = char
         # a flag to mark the end of the query and store its frequency.
@@ -9,6 +9,7 @@ class TrieNode:
         # a dictionary of child nodes
         # keys are characters, values are nodes
         self.children = {}
+        self.is_ngrame = False # will indicate if this node if ngrame of a parent node
 
 class Trie(object):
     def __init__(self):
@@ -17,14 +18,14 @@ class Trie(object):
         """
         self.root = TrieNode("")
 
-    def build_tree(self, queries_dict):
+    def build_tree(self, queries_dict, ngrame_dict):
         """
         :param queries_dict (dict): format {query string : frequency}
         """
         for query in queries_dict.keys():
-            self.insert(query, queries_dict)
+            self.insert(query, queries_dict, ngrame_dict)
 
-    def insert(self, query, queries_dict):
+    def insert(self, query, queries_dict, ngrame_dict):
         """Insert a query into the trie"""
         node = self.root
         # Loop through each character in the query string
@@ -39,6 +40,7 @@ class Trie(object):
                 node = new_node
         # Mark the end of a query with the frequency counter
         node.count = queries_dict[query]
+        node.is_ngrame = ngrame_dict[query]  # this will indicate if the query is an ngrame or not
     def dfs(self, node, prefix):
         """Depth-first traversal of the trie
         
