@@ -41,7 +41,7 @@ class Item(BaseModel):
 
 
 # read agent data
-dataset_path = 'data/prod_v1/agent_data_2.csv'
+dataset_path = 'data/prod_v1/agent_data_3.csv'
 dataset = get_agent_msgs(dataset_path)
 
 # change recursion limit
