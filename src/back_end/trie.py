@@ -1,15 +1,18 @@
 class TrieNode:
     """A node in the trie structure"""
 
-    def __init__(self, char, is_ngrame):
+    def __init__(self, char, isleaf = False, parent_word_count = -1):
         # the character stored in this node
         self.char = char
+        self.parent_word_count = parent_word_count
         # a flag to mark the end of the query and store its frequency.
         self.count = -1
         # a dictionary of child nodes
         # keys are characters, values are nodes
         self.children = {}
-        self.is_ngrame = False # will indicate if this node if ngrame of a parent node
+        self.ngram_level = -1 # this will indicate the ngram level
+        self.isleaf = isleaf
+        
 
 class Trie(object):
     def __init__(self):
@@ -18,42 +21,49 @@ class Trie(object):
         """
         self.root = TrieNode("")
 
-    def build_tree(self, queries_dict, ngrame_dict):
+    def build_tree(self, queries_dict):
         """
         :param queries_dict (dict): format {query string : frequency}
         """
         for query in queries_dict.keys():
-            self.insert(query, queries_dict, ngrame_dict)
+            self.insert(query, queries_dict)
 
-    def insert(self, query, queries_dict, ngrame_dict):
+    def insert(self, query, queries_dict):
         """Insert a query into the trie"""
         node = self.root
         # Loop through each character in the query string
         # if there is no child containing the character, create a new child for the current node
         for char in query:
-            if char in node.children:
-                node = node.children[char]
-            else:
-                # If a character is not found, create a new node in the trie
-                new_node = TrieNode(char)
-                node.children[char] = new_node
-                node = new_node
-        # Mark the end of a query with the frequency counter
-        node.count = queries_dict[query]
-        node.is_ngrame = ngrame_dict[query]  # this will indicate if the query is an ngrame or not
-    def dfs(self, node, prefix):
+                if char in node.children:
+                    node = node.children[char]
+                else:
+                    # If a character is not found, create a new node in the trie
+                    new_node = TrieNode(char)
+                    node.children[char] = new_node
+                    node = new_node
+        # Mark the end of a query with isleaf seted to True
+        node.isleaf = True
+        node.count = queries_dict[query][0]  # get freq
+        node.is_ngrame = queries_dict[query][1]  # this will indicate if the query is an ngrame or not
+
+    def dfs(self, node, prefix, skip = False, last_word_count = -11111111):
         """Depth-first traversal of the trie
         
         :param node (TrieNode): the root of the subtree
         :param prefix (string): the current prefix to form the full queries when traversing the trie
         """
-        if node.count != -1:
-            self.output.append((prefix + node.char, node.count))
+        if not skip and node.count != -1:
+            # if node.count != -1 and node.is_ngrame == False:
+                    self.output.append((prefix + node.char, node.count))
+                    # save that this is a parent word
+                    last_word_count = node.count
         
         for child in node.children.values():
-            self.dfs(child, prefix + node.char)
-            
-        
+            if child.count == last_word_count:  
+                self.dfs(child, prefix + node.char, skip = True, last_word_count = last_word_count)
+            else:
+                self.dfs(child, prefix + node.char, last_word_count=last_word_count)
+
     def search(self, x, top_n=10):
         """Given an input (a prefix), find all queries stored in
         the trie starting with the perfix, sort and return top_n queries based on the occurences.
