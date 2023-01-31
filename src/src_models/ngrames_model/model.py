@@ -1,11 +1,6 @@
 from src.back_end.trie import Trie
 
-def create_queries(dataset):
-    queries = {}
-    for i, row in dataset.iterrows():
-        msg, freq, l = row
-        queries[msg] = freq
-    return queries
+
 
 def get_words_match(prefix, t):
     res = t.search(prefix)
@@ -14,8 +9,10 @@ def get_words_match(prefix, t):
 
 
 def build_trie(dataset):
-    # create query dict
-    queries = create_queries(dataset)
+    queries = {}
+    for i, row in dataset.iterrows():
+        msg, freq, ngram_level = row
+        queries[msg] = [freq, ngram_level]
 
     # build trie
     t = Trie()
