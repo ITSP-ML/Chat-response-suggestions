@@ -55,6 +55,7 @@ def get_agent_msgs(data_path):
     dataset['len'] = dataset.processed_msg.apply(lambda x: len(x.split()))
     dataset = dataset[dataset.len <= 50]
     dataset = dataset.reset_index(drop = True)
+    del dataset['len']
     return dataset
 
 def change_recursion_limit(new_limit):
