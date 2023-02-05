@@ -49,7 +49,8 @@ limit = 10000000
 change_recursion_limit(limit)
 
 # build trie
-t = build_trie(dataset)
+validation_threshold = 0.9 # this a threshold that indicate that the child of a parent node will most likely been typed after the parent
+t = build_trie(dataset, validation_threshold)
 
 # sementic search
 model_name = 'distilbert-base-nli-stsb-mean-tokens'
