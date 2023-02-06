@@ -15,13 +15,14 @@ class TrieNode:
         self.is_valid = False
 
 class Trie(object):
-    def __init__(self, validation_threshold, max_number_of_words = 3):
+    def __init__(self, validation_threshold, max_number_of_words = 3, max_number_of_suggestions = 10):
         """
         Initiate the trie with an empty char
         """
         self.root = TrieNode("")
         self.validation_threshold = validation_threshold
         self.max_number_of_words = max_number_of_words
+        self.max_number_of_suggestions = max_number_of_suggestions 
     def trim_sugg(sugg, max_number_of_words):
         return sugg[:max_number_of_words]
 
@@ -99,7 +100,7 @@ class Trie(object):
         #     print('yessss')
         #     self.output.append((prefix + node.char, node.count))
 
-    def search(self, x, top_n=10):
+    def search(self, x):
         """Given an input (a prefix), find all queries stored in
         the trie starting with the perfix, sort and return top_n queries based on the occurences.
         """
@@ -121,6 +122,7 @@ class Trie(object):
 
         # Sort the results in reverse order and return
         # self.output.sort(key=lambda x: x[1], reverse=True)
+        top_n = self.max_number_of_suggestions
         self.output = sorted(self.output.items(), key=lambda x:x[1], reverse= True)[:top_n]
         
         return self.output
