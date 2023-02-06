@@ -77,7 +77,6 @@ async def root(data: Item):
     if len(words_match) < max_nb_suggs:
         sementic_match = get_sementic_match(pre_prefix, dataset_2, model_name, embbeding_path, top_k_hits = 10,
                                              min_prob = min_prob,  max_number_of_words = 3)[:(max_nb_suggs - len(words_match))]
-        print(words_match, sementic_match)
         return words_match +sementic_match
         # return sementic_match
     else:
