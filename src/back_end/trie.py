@@ -15,12 +15,15 @@ class TrieNode:
         self.is_valid = False
 
 class Trie(object):
-    def __init__(self, validation_threshold):
+    def __init__(self, validation_threshold, max_number_of_words = 3):
         """
         Initiate the trie with an empty char
         """
         self.root = TrieNode("")
         self.validation_threshold = validation_threshold
+        self.max_number_of_words = max_number_of_words
+    def trim_sugg(sugg, max_number_of_words):
+        return sugg[:max_number_of_words]
 
     def build_tree(self, queries_dict):
         """
@@ -48,34 +51,38 @@ class Trie(object):
         node.count = queries_dict[query][0]  # get freq
         node.is_ngrame = queries_dict[query][1]  # this will indicate if the query is an ngrame or not
 
-    def dfs(self, node, prefix, cache = None, prefix_cache = None):
+    def dfs(self, node, prefix, cache = None, prefix_cache = None, number_of_words = 0):
         """Depth-first traversal of the trie
         :param node (TrieNode): the root of the subtree
         :param prefix (string): the current prefix to form the full queries when traversing the trie
         """
-        if node.count != -1:
-          
-            if cache is None:
-       
-                cache = node # first cache
-                prefix_cache = prefix
-                # print(prefix_cache)
-                # print(cache.char)
-                for child in node.children.values():
-                    self.dfs(child, prefix + node.char, cache = cache, prefix_cache = prefix_cache) # search in child
-            else:
-                if node.count < cache.count * self.validation_threshold and node.count > cache.count * (1-self.validation_threshold):
-                    cache.is_valid == True
-                    # print(prefix_cache, cache.char)
-                    # self.output.append((prefix_cache + cache.char, cache.count))
-                    self.output[prefix_cache + cache.char] = cache.count
-                if node.isleaf == True:
-                        self.output[prefix + node.char] = node.count
-                cache = node
-                prefix_cache = prefix 
-                for child in node.children.values():
-                    self.dfs(child, prefix + node.char, cache=cache,  prefix_cache = prefix_cache) # search in child
+        if node.count != -1 :
+            if number_of_words >= self.max_number_of_words:
+                self.output[prefix + node.char] = node.count
 
+            else:
+                number_of_words +=1
+                if cache is None:
+        
+                    cache = node # first cache
+                    prefix_cache = prefix
+                    # print(prefix_cache)
+                    # print(cache.char)
+                    for child in node.children.values():
+                        self.dfs(child, prefix + node.char, cache = cache, prefix_cache = prefix_cache, number_of_words=number_of_words) # search in child
+                else:
+                    if node.count < cache.count * self.validation_threshold and node.count > cache.count * (1-self.validation_threshold):
+                        cache.is_valid == True
+                        # print(prefix_cache, cache.char)
+                        # self.output.append((prefix_cache + cache.char, cache.count))
+                        self.output[prefix_cache + cache.char] = cache.count
+                    if node.isleaf == True:
+                            self.output[prefix + node.char] = node.count
+                    cache = node
+                    prefix_cache = prefix 
+                    for child in node.children.values():
+                        self.dfs(child, prefix + node.char, cache=cache,  prefix_cache = prefix_cache, number_of_words=number_of_words) # search in child
+                
         else:
      
             if cache is None:
@@ -85,14 +92,14 @@ class Trie(object):
                 cache = cache
                 prefix_cache = prefix_cache
                 for child in node.children.values():
-                    self.dfs(child, prefix + node.char, cache= cache, prefix_cache =prefix_cache) # search in child
+                    self.dfs(child, prefix + node.char, cache= cache, prefix_cache =prefix_cache, number_of_words=number_of_words) # search in child
 
 
         # if node.is_valid == True :#and node.count != -1:
         #     print('yessss')
         #     self.output.append((prefix + node.char, node.count))
 
-    def search(self, x, top_n=50):
+    def search(self, x, top_n=10):
         """Given an input (a prefix), find all queries stored in
         the trie starting with the perfix, sort and return top_n queries based on the occurences.
         """
