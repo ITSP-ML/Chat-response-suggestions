@@ -4,7 +4,7 @@
   async function get_suggestions_list(keyword) {
     // let x = JSON.stringify({ text: "P" });
     let data = { text: keyword };
-    const url = "http://127.0.0.1:8000/";
+    const url = "http://127.0.0.1:8010/";
     const response = await fetch(url, {
       method: "POST",
       headers: {
