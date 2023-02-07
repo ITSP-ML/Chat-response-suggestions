@@ -3,7 +3,8 @@
 **explain**
 **running guide**
 - generate the embedding file by running this cmd: python src/APIs/prod_01/generate_embeddings.py
-- run the Api :uvicorn src.back_end.autocomplete_API:app --reload
+- run the autocomplete Api :uvicorn src.back_end.autocomplete_API:app --reload --port 8010
+- run the sementic seaarch Api :uvicorn src.back_end.sementic_search_API:app --reload --port 8011
 - run front_end: port=8007 npm run dev
 **future work**
 - this version is only for english (multilingual will follow)
