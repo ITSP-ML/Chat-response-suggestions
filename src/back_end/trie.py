@@ -1,4 +1,5 @@
 from src.back_end import spell
+from collections import Counter
 class TrieNode:
     """A node in the trie structure"""
 
@@ -16,14 +17,13 @@ class TrieNode:
         self.is_valid = False
 
 class Trie(object):
-    def __init__(self, validation_threshold, max_number_of_words = 3, max_number_of_suggestions = 10):
+    def __init__(self, validation_threshold, max_number_of_words = 3):
         """
         Initiate the trie with an empty char
         """
         self.root = TrieNode("")
         self.validation_threshold = validation_threshold
         self.max_number_of_words = max_number_of_words
-        self.max_number_of_suggestions = max_number_of_suggestions
         self.checker = spell.Spell()
     def trim_sugg(sugg, max_number_of_words):
         return sugg[:max_number_of_words]
@@ -193,8 +193,8 @@ class Trie(object):
  
         return self.output
 
-    def search(self, x):
+    def search(self, x, top_suggs):
+        self.output = {}
         self.final_output = self.search_x(x, set(), cache = '')
-        top_n = self.max_number_of_suggestions
-        self.final_output = sorted(self.final_output.items(), key=lambda x:x[1], reverse= True)[:top_n]
-        return self.final_output
+        # self.sorted_outputs = sorted(self.final_output.items(), key=lambda x:x[1], reverse= True)
+        return dict(Counter(self.final_output).most_common(top_suggs))

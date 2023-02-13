@@ -1,10 +1,9 @@
 from fastapi import FastAPI
 from pydantic import BaseModel
 from fastapi.middleware.cors import CORSMiddleware
+from fastapi.openapi.utils import get_openapi
+
 import set_cwd
-
-
-
 from src.preprocess.autocomplete_preprocess import get_agent_msgs, preprocess_msg, change_recursion_limit
 from src.src_models.ngrames_model.model import build_trie, get_words_match
 
@@ -34,7 +33,8 @@ app.add_middleware(
 
 
 class Item(BaseModel):
-    text: str
+    text: str = "hi there"
+    nb_sugg :int = 10
 
 
 
@@ -46,28 +46,45 @@ dataset = get_agent_msgs(dataset_path)
 limit = 10000000
 change_recursion_limit(limit)
 
-# build trie
+#build the Trie
 validation_threshold = 0.9 # this a threshold that indicate that the child of a parent node will most likely been typed after the parent
-# set the the max number of suggestion to be shown
-max_nb_suggs = 10
-t = build_trie(dataset, validation_threshold, max_number_of_suggestions = max_nb_suggs)
-
-# sementic search
-model_name = 'distilbert-base-nli-stsb-mean-tokens'
-embbeding_path = "data/prod_v1/doc_embedding.pickle"
-print('all_done')
+t = build_trie(dataset, validation_threshold)
 
 
 
 
+@app.get("/")
+async def home():
+    return 'API is working'
 
 
-@app.post("/")
+@app.post("/autocomplete")
 async def root(data: Item):
     prefix = data.text
+    nb_suggs = data.nb_sugg
     # preprocess prefix 
-    pre_prefix = preprocess_msg(prefix)
-    words_match = get_words_match(pre_prefix, t)
+    pre_prefix = preprocess_msg(prefix) # clean and preprocess the new user prefix
+    words_match = get_words_match(pre_prefix, t, nb_suggs) # get matched sentences from the Trie
     return words_match
-    # return get_sementic_match(pre_prefix, dataset_2, model_name, embbeding_path, top_k_hits = 10,
-    #                                          min_prob = min_prob,  max_number_of_words = 3)
+
+
+def custom_openapi():
+    if app.openapi_schema:
+        return app.openapi_schema
+    openapi_schema = {"openapi":"3.0.2","info":{"title":"Autocomplete","description":"Autocomplete feature with Auto correction of user inputs","version":"1.0.1"},
+                      "paths":{"/":{"get":{"summary":"Home","operationId":"home__get","responses":{"200":{"description":"Successful Response",
+                        "content":{"application/json":{"schema":{}}}}}}},"/autocomplete":{"post":{"summary":"Root","operationId":"root_autocomplete_post",
+                        "requestBody":{"content":{"application/json":{"schema":{"$ref":"#/components/schemas/Item"}}},"required":True},"responses":{"200":{"description":"Successful Response",
+                        "content":{"application/json":{"schema":{}}}},"422":{"description":"Validation Error","content":{"application/json":{"schema":{"$ref":"#/components/schemas/HTTPValidationError"}}}}}}}},
+                    "components":{"schemas":{"HTTPValidationError":{"title":"HTTPValidationError","type":"object","properties":{"detail":{"title":"Detail","type":"array",
+                    "items":{"$ref":"#/components/schemas/ValidationError"}}}},"Item":{"title":"Item","required":["text"],"type":"object","properties":{"text":{"title":"Text","type":"string", "default":'hi there', "description": "prefix that agent already typed"},
+                    "nb_sugg":{"title":"Nb Sugg","type":"integer", "description": "number of returned suggestions","default":10}}},"ValidationError":{"title":"ValidationError","required":["loc","msg","type"],"type":"object",
+                    "properties":{"loc":{"title":"Location","type":"array","items":{"anyOf":[{"type":"string"},{"type":"integer"}]}},"msg":{"title":"Message","type":"string"},
+                    "type":{"title":"Error Type","type":"string"}}}}}}
+    app.openapi_schema = openapi_schema
+    return app.openapi_schema
+
+
+
+
+app.openapi = custom_openapi
