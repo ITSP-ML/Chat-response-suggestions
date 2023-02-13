@@ -2,20 +2,25 @@ from src.back_end.trie import Trie
 
 
 
-def get_words_match(prefix, t):
-    res = t.search(prefix)
-    match_prefix = [{"sugg": msg} for msg, freq in res if msg!=prefix]
-    return match_prefix
+def get_words_match(prefix, t, nb_suggs):
+    final_results = {}
+    res = t.search(prefix, nb_suggs)
+    # remove the prefix if its in suggestions
+    if prefix in list(res.keys()):
+        del res[prefix]
+    final_results['suggestions'] = list(res.keys())
+    final_results['scores'] = list(res.values())
+    return final_results
 
 
-def build_trie(dataset, validation_threshold, max_number_of_suggestions = 10):
+def build_trie(dataset, validation_threshold):
     queries = {}
     for i, row in dataset.iterrows():
         msg, freq, ngram_level = row
         queries[msg] = [freq, ngram_level]
 
     # build trie
-    t = Trie(validation_threshold, max_number_of_suggestions = max_number_of_suggestions)
+    t = Trie(validation_threshold,)
     t.build_tree(queries)
     return t
 
