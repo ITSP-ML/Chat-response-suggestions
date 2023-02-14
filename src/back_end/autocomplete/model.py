@@ -1,4 +1,4 @@
-from src.back_end.trie import Trie
+from src.back_end.autocomplete.trie import Trie
 
 
 

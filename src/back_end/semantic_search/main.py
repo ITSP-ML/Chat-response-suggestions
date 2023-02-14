@@ -3,9 +3,8 @@ from pydantic import BaseModel
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.openapi.utils import get_openapi
 
-import set_cwd
-from src.preprocess.autocomplete_preprocess import get_agent_msgs, preprocess_msg
-from src.src_models.sementic_search.model import get_sementic_match
+from src.back_end.preprocess.autocomplete_preprocess import get_agent_msgs, preprocess_msg
+from src.back_end.semantic_search.model import get_sementic_match
 
 
 
@@ -54,7 +53,6 @@ embbeding_path = "data/prod_v1/doc_embedding.pickle"
 
 
 
-print('hiiiiiiiiiiiii' , app.routes)
 @app.get("/")
 async def home():
     return 'API is working'

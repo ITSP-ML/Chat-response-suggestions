@@ -3,9 +3,9 @@ from pydantic import BaseModel
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.openapi.utils import get_openapi
 
-import set_cwd
-from src.preprocess.autocomplete_preprocess import get_agent_msgs, preprocess_msg, change_recursion_limit
-from src.src_models.ngrames_model.model import build_trie, get_words_match
+from src.back_end.preprocess.autocomplete_preprocess import get_agent_msgs, preprocess_msg, change_recursion_limit
+
+from src.back_end.autocomplete.model import build_trie, get_words_match
 
 
 

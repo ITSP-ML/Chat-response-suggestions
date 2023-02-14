@@ -1,4 +1,5 @@
-from src.back_end import spell
+from src.back_end.autocomplete import spell
+
 from collections import Counter
 class TrieNode:
     """A node in the trie structure"""
