@@ -83,6 +83,8 @@ def custom_openapi():
     # change the input of the API
     openapi_schema["components"]["schemas"]["Item"] = {"title":"Item","required":["text"],"type":"object","properties":{"text":{"title":"Text","type":"string", "default":'hi there', "description": "prefix that agent already typed"},
                     "nb_sugg":{"title":"Nb Sugg","type":"integer", "description": "number of returned suggestions","default":10}}}
+    # make the docs visible to the reverse proxy
+    openapi_schema["servers"] = [ { "url": "/autocomplete" } ]
     # set the version of Openapi
     openapi_schema["openapi"] = "3.0.2"
 

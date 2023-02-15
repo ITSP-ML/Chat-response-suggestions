@@ -85,7 +85,8 @@ def custom_openapi():
     openapi_schema["components"]["schemas"]["Item"] ={"title":"Item","required":["text"],"type":"object","properties":{"text":{"title":"Text","type":"string", "default":'hi there', "description": "prefix that agent already typed"},
                     "nb_suggs":{"title":"Nb Suggs", "description": "number of returned suggestions","type":"integer","default":10},
                     "min_prob":{"title":"Min Prob","type":"integer", "description": "ensure that all generated suggestions have a minimum probability ","default":0}}}
-
+    # make the docs visible to the reverse proxy
+    openapi_schema["servers"] = [ { "url": "/semantic_search" } ]
     # set the version of Openapi
     openapi_schema["openapi"] = "3.0.2"
 
