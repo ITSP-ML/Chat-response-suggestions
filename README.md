@@ -19,6 +19,6 @@ Copy the models under the models folder(/models) and **never** commit to git.
 
 # Dev
 - python src/APIs/prod_01/generate_embeddings.py : generate the embedding file by running this cmd
-- uvicorn src.back_end.autocomplete.main:app --reload --port 8010 : uvicorn src.back_end.autocomplete.main:app --reload --port 8010
+- uvicorn src.back_end.autocomplete.main:app --reload --port 8010 : run the autocomplete Api
 - uvicorn src.back_end.semantic_search.main:app --reload --port 8011 : run the sementic seaarch Api
 - port=8007 npm run dev : run front_end
