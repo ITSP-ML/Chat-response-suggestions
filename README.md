@@ -1,11 +1,7 @@
 # Chat-response-suggestions
-# Prod 1
+
 **explain**
-**running guide**
-- generate the embedding file by running this cmd: python src/APIs/prod_01/generate_embeddings.py
-- run the autocomplete Api :uvicorn src.back_end.autocomplete_API:app --reload --port 8010
-- run the sementic seaarch Api :uvicorn src.back_end.sementic_search_API:app --reload --port 8011
-- run front_end: port=8007 npm run dev
+
 **future work**
 - this version is only for english (multilingual will follow)
 - Add spell correction
@@ -21,3 +17,8 @@ Copy the models under the models folder(/models) and **never** commit to git.
 - **ner_demo_replace**
 - **rasa**
 
+# Dev
+- python src/APIs/prod_01/generate_embeddings.py : generate the embedding file by running this cmd
+- uvicorn src.back_end.autocomplete.main:app --reload --port 8010 : run the autocomplete Api
+- uvicorn src.back_end.semantic_search.main:app --reload --port 8011 : run the sementic seaarch Api
+- port=8007 npm run dev : run front_end

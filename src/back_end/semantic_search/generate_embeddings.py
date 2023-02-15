@@ -2,7 +2,7 @@ import numpy as np
 import pickle
 from sentence_transformers import SentenceTransformer
 
-from src.preprocess.autocomplete_preprocess import get_agent_msgs
+from src.back_end.preprocess import get_agent_msgs
 def generate_embeddings(model_name, data_path, save_path):
     """
     model_name: the name of model used for generating embeddings

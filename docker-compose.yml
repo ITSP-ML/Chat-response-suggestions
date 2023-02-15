@@ -1,0 +1,33 @@
+version: '3.7'
+
+services:
+
+  autocomplete:
+    build:
+      context: .
+      dockerfile: ./src/back_end/autocomplete/Dockerfile
+    # command: uvicorn src.back_end.autocomplete.main:app --host 0.0.0.0
+    # ports:
+    #  - "8000:8000"
+    volumes:
+     - .:/code
+  semantic_search:
+    build:
+      context: .
+      dockerfile: ./src/back_end/semantic_search/Dockerfile
+    # ports:
+    #  - "8001:8001"
+    volumes:
+     - .:/code
+  nginx:
+    container_name: nginx
+    build:
+      context: .
+      dockerfile: ./src/gateway/nginx/Dockerfile 
+    # Bind the port 80 of container to machine port 80
+    ports:
+      - 80:80
+    # Make app as nginx dependency service
+    depends_on:
+      - autocomplete
+      - semantic_search
