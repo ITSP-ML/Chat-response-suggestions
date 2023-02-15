@@ -3,7 +3,6 @@ import re
 import sys
 
 
-import set_cwd
 
 # turn off chained_assignment warnings
 pd.options.mode.chained_assignment = None  # default='warn'

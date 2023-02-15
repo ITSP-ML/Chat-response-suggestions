@@ -1,7 +1,6 @@
 from collections import Counter
 import re
 import string
-import set_cwd
 
 class Spell:
     def __init__(self, file='data/prod_v1/spell_correction/big_text.txt'):
