@@ -13,7 +13,7 @@ from src.back_end.autocomplete.model import build_trie, get_words_match
 
 
 
-app = FastAPI()
+app = FastAPI(root_path="/autocomplete")
 
 origins = [
     "http://localhost",
@@ -58,7 +58,9 @@ async def home():
     return 'API is working'
 
 
-@app.post("/autocomplete")
+
+
+@app.post("/search")
 async def root(data: Item):
     prefix = data.text
     nb_suggs = data.nb_sugg

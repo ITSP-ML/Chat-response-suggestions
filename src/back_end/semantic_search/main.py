@@ -12,7 +12,7 @@ from src.back_end.semantic_search.model import get_sementic_match
 
 
 
-app = FastAPI()
+app = FastAPI(root_path= 'semantic_search')
 
 origins = [
     "http://localhost",
