@@ -70,23 +70,24 @@ async def root(data: Item):
     return words_match
 
 
+
 def custom_openapi():
     if app.openapi_schema:
         return app.openapi_schema
-    openapi_schema = {"openapi":"3.0.2","info":{"title":"Autocomplete","description":"Autocomplete feature with Auto correction of user inputs","version":"1.0.1"},
-                      "paths":{"/":{"get":{"summary":"Home","operationId":"home__get","responses":{"200":{"description":"Successful Response",
-                        "content":{"application/json":{"schema":{}}}}}}},"/autocomplete":{"post":{"summary":"Root","operationId":"root_autocomplete_post",
-                        "requestBody":{"content":{"application/json":{"schema":{"$ref":"#/components/schemas/Item"}}},"required":True},"responses":{"200":{"description":"Successful Response",
-                        "content":{"application/json":{"schema":{}}}},"422":{"description":"Validation Error","content":{"application/json":{"schema":{"$ref":"#/components/schemas/HTTPValidationError"}}}}}}}},
-                    "components":{"schemas":{"HTTPValidationError":{"title":"HTTPValidationError","type":"object","properties":{"detail":{"title":"Detail","type":"array",
-                    "items":{"$ref":"#/components/schemas/ValidationError"}}}},"Item":{"title":"Item","required":["text"],"type":"object","properties":{"text":{"title":"Text","type":"string", "default":'hi there', "description": "prefix that agent already typed"},
-                    "nb_sugg":{"title":"Nb Sugg","type":"integer", "description": "number of returned suggestions","default":10}}},"ValidationError":{"title":"ValidationError","required":["loc","msg","type"],"type":"object",
-                    "properties":{"loc":{"title":"Location","type":"array","items":{"anyOf":[{"type":"string"},{"type":"integer"}]}},"msg":{"title":"Message","type":"string"},
-                    "type":{"title":"Error Type","type":"string"}}}}}}
+    openapi_schema = get_openapi(
+        title="Autocomplete",
+        version="1.0.2",
+        description="Autocomplete feature with Auto correction of user inputs",
+        routes=app.routes,
+    )
+    # change the input of the API
+    openapi_schema["components"]["schemas"]["Item"] = {"title":"Item","required":["text"],"type":"object","properties":{"text":{"title":"Text","type":"string", "default":'hi there', "description": "prefix that agent already typed"},
+                    "nb_sugg":{"title":"Nb Sugg","type":"integer", "description": "number of returned suggestions","default":10}}}
+    # set the version of Openapi
+    openapi_schema["openapi"] = "3.0.2"
+
     app.openapi_schema = openapi_schema
     return app.openapi_schema
-
-
 
 
 app.openapi = custom_openapi

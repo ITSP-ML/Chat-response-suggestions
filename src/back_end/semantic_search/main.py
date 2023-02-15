@@ -12,7 +12,7 @@ from src.back_end.semantic_search.model import get_sementic_match
 
 
 
-app = FastAPI(root_path= 'semantic_search')
+app = FastAPI(root_path= '/semantic_search')
 
 origins = [
     "http://localhost",
@@ -69,25 +69,30 @@ async def root(data: Item):
 
 
 
+
+
+
 def custom_openapi():
     if app.openapi_schema:
         return app.openapi_schema
-    openapi_schema = {"openapi":"3.0.2","info":{"title":"Semantic Search","description":"match the user input by meanings","version":"1.0.0"},
-                      "paths":{"/":{"get":{"summary":"Home","operationId":"home__get","responses":{"200":{"description":"Successful Response",
-                      "content":{"application/json":{"schema":{}}}}}}},"/search":{"post":{"summary":"Root","operationId":"root_search_post",
-                    "requestBody":{"content":{"application/json":{"schema":{"$ref":"#/components/schemas/Item"}}},"required":True},
-                    "responses":{"200":{"description":"Successful Response","content":{"application/json":{"schema":{}}}},"422":{"description":"Validation Error",
-                    "content":{"application/json":{"schema":{"$ref":"#/components/schemas/HTTPValidationError"}}}}}}}},
-                    "components":{"schemas":{"HTTPValidationError":{"title":"HTTPValidationError","type":"object",
-                    "properties":{"detail":{"title":"Detail","type":"array","items":{"$ref":"#/components/schemas/ValidationError"}}}},
-                    "Item":{"title":"Item","required":["text"],"type":"object","properties":{"text":{"title":"Text","type":"string", "default":'hi there', "description": "prefix that agent already typed"},
-                    "nb_suggs":{"title":"Nb Suggs", "description": "number of returned suggestions","type":"integer","default":10},"min_prob":{"title":"Min Prob","type":"integer", "description": "ensure that all generated suggestions have a minimum probability ","default":0}}},
-                    "ValidationError":{"title":"ValidationError","required":["loc","msg","type"],"type":"object",
-                    "properties":{"loc":{"title":"Location","type":"array","items":{"anyOf":[{"type":"string"},{"type":"integer"}]}},
-                    "msg":{"title":"Message","type":"string"},"type":{"title":"Error Type","type":"string"}}}}}}
+    openapi_schema = get_openapi(
+        title="Semantic Search",
+        version="1.0.1",
+        description="match the user input by meanings",
+        routes=app.routes,
+    )
+    # change the input of the API
+    openapi_schema["components"]["schemas"]["Item"] ={"title":"Item","required":["text"],"type":"object","properties":{"text":{"title":"Text","type":"string", "default":'hi there', "description": "prefix that agent already typed"},
+                    "nb_suggs":{"title":"Nb Suggs", "description": "number of returned suggestions","type":"integer","default":10},
+                    "min_prob":{"title":"Min Prob","type":"integer", "description": "ensure that all generated suggestions have a minimum probability ","default":0}}}
+
+    # set the version of Openapi
+    openapi_schema["openapi"] = "3.0.2"
 
     app.openapi_schema = openapi_schema
     return app.openapi_schema
+
+
 
 
 
