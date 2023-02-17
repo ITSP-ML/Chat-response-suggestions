@@ -40,7 +40,7 @@ env_delete: def_env_delete
 #################################################################################
 
 run:
-	docker-compose up --build 
+	docker-compose up --build -d --scale autocomplete=2 --scale semantic_search=2
 down:
 	docker-compose down
 

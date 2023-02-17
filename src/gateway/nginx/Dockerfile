@@ -4,4 +4,4 @@ FROM nginx
 RUN rm /etc/nginx/conf.d/default.conf
 COPY ./src/gateway/nginx/nginx.conf /etc/nginx/nginx.conf
 
-EXPOSE 5030
+EXPOSE 80
