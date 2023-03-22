@@ -18,7 +18,7 @@ class TrieNode:
         self.is_valid = False
 
 class Trie(object):
-    def __init__(self, validation_threshold, max_number_of_words = 3):
+    def __init__(self, validation_threshold, max_number_of_words):
         """
         Initiate the trie with an empty char
         """
@@ -81,7 +81,7 @@ class Trie(object):
                         # print(prefix_cache, cache.char)
                         # self.output.append((prefix_cache + cache.char, cache.count))
                         self.output[prefix_cache + cache.char] = cache.count
-                    if node.isleaf == True:
+                    if len(node.children.values() )== 0:
                             self.output[search_term] = node.count
                     cache = node
                     prefix_cache = prefix 
