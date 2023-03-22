@@ -13,14 +13,14 @@ def get_words_match(prefix, t, nb_suggs):
     return final_results
 
 
-def build_trie(dataset, validation_threshold):
+def build_trie(dataset, validation_threshold, max_number_of_words = 3):
     queries = {}
     for i, row in dataset.iterrows():
         msg, freq, ngram_level = row
         queries[msg] = [freq, ngram_level]
 
     # build trie
-    t = Trie(validation_threshold,)
+    t = Trie(validation_threshold, max_number_of_words)
     t.build_tree(queries)
     return t
 
