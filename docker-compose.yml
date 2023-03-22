@@ -26,7 +26,7 @@ services:
       dockerfile: ./src/gateway/nginx/Dockerfile 
     # Bind the port 80 of container to machine port 80
     ports:
-      - 80:80
+      - 5010:80
     # Make app as nginx dependency service
     depends_on:
       - autocomplete
