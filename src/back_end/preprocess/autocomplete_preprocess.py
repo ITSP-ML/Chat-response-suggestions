@@ -62,3 +62,109 @@ def change_recursion_limit(new_limit):
     print(sys.getrecursionlimit())
     sys.setrecursionlimit(new_limit)
     print(sys.getrecursionlimit())
+
+# remove all extentions
+def remove_extensions(text):
+    '''
+    We removed attachments while extracting body but not the name of these attachments
+    removing attachment_names based on what i encountered in subject and body
+    '''
+    ext_patterns = ["\S+\.doc","\S+\.jpeg","\S+\.jpg","\S+\.gif","\S+\.csv","\S+\.ppt","\S+\.dat","\S+\.xml","\S+\.xls","\S+\.sql","\S+\.nsf","\S+\.jar","\S+\.bin",'\S+\.jpg', "\S+\.png"]
+    pattern = '|'.join(ext_patterns)
+    text = re.sub(pattern,'',text)
+    return text
+
+
+#Decontraction of text
+def decontracted(phrase):
+    """
+    Returns decontracted phrases
+    """
+    # specific
+    phrase = re.sub(r"won't", "will not", phrase)
+    phrase = re.sub(r"can\'t", "can not", phrase)
+    # general
+    phrase = re.sub(r"n\'t", " not", phrase)
+    phrase = re.sub(r"\'re", " are", phrase)
+    phrase = re.sub(r"\'s", " is", phrase)
+    phrase = re.sub(r"\'d", " would", phrase)
+    phrase = re.sub(r"\'ll", " will", phrase)
+    phrase = re.sub(r"\'t", " not", phrase)
+    phrase = re.sub(r"\'ve", " have", phrase)
+    phrase = re.sub(r"\'m", " am", phrase)
+    return phrase
+
+def remove_personal_name(text):
+    '''
+    Helper function to Filter out names using NER
+    '''
+
+    s = nltk.ne_chunk(nltk.pos_tag(nltk.word_tokenize(text)))
+    for ele in s:
+        if isinstance(ele, nltk.Tree):
+            if ele.label()=='PERSON':
+                for word,pos_tag in ele:
+                    try:     # words containing a special character will raise an error so handling it, these words weren't a name so we can safely skip it
+                        val = re.sub(word,'',text)
+                        text = val
+                    except:
+                        continue
+    return text
+
+
+
+def smart_compose_processing(text):
+        # remove url and email-id's
+        remove_url = r'(www|http)\S+'
+        remove_email = r'\S+@\S+' 
+        remove_space = r'\s+'
+        remove_phone =  "^(\+\d{1,2}\s?)?\(?\d{3}\)?[\s.-]?\d{3}[\s.-]?\d{4}$"
+        pattern_list_1 = [remove_url,remove_phone,remove_email]
+
+        for pattern in pattern_list_1:
+            text = re.sub(pattern,'',text)
+
+        # remove attachment_names
+        text = remove_extensions(text)
+
+        # remove any word with digit for coupons
+        text = re.sub(r'\w*\d\w*', '', text)
+
+        # remove any digit
+        text = re.sub('\d','',text)
+
+        # remove text between <>,()
+        remove_tags = r'<.*>'
+        remove_brackets = '\[.*?\]'
+        remove_parentheses = '\(.*?\)'
+        # remove_brackets = r'.*'
+        remove_special_1 = r'\|-'  # remove raw backslash or '-'
+        remove_colon = r'\b[\w]+:' # removes 'something:'
+
+        pattern_list_2 = [remove_tags,remove_brackets,remove_special_1,remove_colon, remove_parentheses]
+        for pattern in pattern_list_2:
+            text = re.sub(pattern,'',text)
+            
+
+        # remove anything which is not a character,apostrophy ; remember to give a space on replacing with this
+        remove_nonchars = r'[^A-Za-z\']'
+        text = re.sub(remove_nonchars,' ',text)
+
+        # remove AM/PM as we have a lot of timestamps in emails
+        # text = remove_timestamps(text)
+
+        # remove personal names using named entity recognition
+        # text = remove_personal_name(text) # personal name removal will be done using the words frequency threshold
+
+        # takes care of \t & \n ; remember to give a space on replacing with this
+        remove_space = r'\s+'
+        text = re.sub(remove_space,' ',text)
+
+        # take care of apostrophies
+        text = decontracted(text)
+
+        # remove other junk
+        text = text.replace("IMAGE",'')
+        text = re.sub(r"\bth\b",'',text)
+
+        return text.strip()   
