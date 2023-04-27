@@ -4,7 +4,7 @@
   async function get_suggestions_list(keyword) {
     // let x = JSON.stringify({ text: "P" });
     let data = { text: keyword };
-    const url = "http://172.26.103.221:5010/autocomplete/search"; // for AutoComplete
+    const url = "http://172.26.103.221:5010/smart_compose/search"; // for Smart_compose
     // const url = "http://172.26.103.221:5010/semantic_search/search"; // for semantic search
     const response = await fetch(url, {
       method: "POST",
