@@ -12,12 +12,25 @@ from pydantic import BaseModel
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.openapi.utils import get_openapi
 from keras_preprocessing.sequence import pad_sequences
+import pandas as pd
+from spellchecker import SpellChecker
 
 from src.back_end.smart_compose.model import AttentionLayer
 from src.back_end.preprocess.autocomplete_preprocess import smart_compose_processing
+from src.back_end.smart_compose.trie import Trie
 
 
 
+# read data and create the Trie for spell check
+data = pd.read_csv('data/smart_compose/Preprocessed_agent_data.csv')
+t = Trie()
+full_string = " ".join(data.msg)
+words = full_string.split()
+for word in words:
+    t.insert(word)
+
+# init the spell checker
+spell = SpellChecker(distance = 1)
 
 nltk.download('punkt')
 warnings.filterwarnings("ignore")
@@ -55,12 +68,15 @@ def bring_my_sentence(input_seq):
 
     stop_condition = False
     decoded_sentence = ''
+    threshold = 0.5
     while not stop_condition:
-      
         output_tokens, h, c = decoder_model.predict([target_seq] + [e_out, e_h, e_c])
-
         # Sample a token
-        sampled_token_index = np.argmax(output_tokens[0, -1, :])
+        token = output_tokens[0, -1, :]
+        sampled_token_index = np.argmax(token)
+        sampled_token_prob = max(token)
+        if sampled_token_prob < threshold:
+            break
         sampled_token = reverse_target_word_index[sampled_token_index]
 
         if(sampled_token!='eos'):
@@ -118,6 +134,7 @@ app.add_middleware(
 
 class Item(BaseModel):
     text: str = "hi there"
+    nb_suggs: int = 10
 
 
 
@@ -125,8 +142,31 @@ def predict(input):
         input_seq = x_tokenizer.texts_to_sequences([input])
         x = pad_sequences(input_seq, maxlen=max_inp_len, padding='post')
         prediction = bring_my_sentence(x.reshape(1,max_inp_len))
-        return {"suggestions": [prediction], "scores": [1]}
+        return prediction
 
+
+def spell_check(input, nb_suggs):
+        call_smart_compose = False
+        # get th trie suggestion based on the prefix of the user
+        results = t.query(input)
+        # if there is no match trie we check the spelling of the last word
+        if results == [] or input != "":
+            corrections = spell.candidates(input)
+            # change to same format as reults
+            max_score = 9999999
+            corrections = [(corr, max_score) for corr in corrections]
+            results.extend(corrections)
+        results = pd.DataFrame(results)
+        if results.empty:
+            return {{"suggestions": [], "scores": []}}, False
+        results.columns = ['words', "scores"] 
+        if len(results) > nb_suggs:
+             results = results.iloc[:nb_suggs]
+        final_output= {"suggestions": results.words.to_list(), "scores": results.scores.to_list()}
+        if input in final_output['suggestions']:
+             # the word typed is correctly recognized
+            call_smart_compose = True
+        return final_output, call_smart_compose
 
 
 @app.get("/")
@@ -139,10 +179,18 @@ async def home():
 @app.post("/search")
 async def root(data: Item):
     prefix = data.text
+    nb_suggs = data.nb_suggs
+    # init smart compose to empty string
+    smart_compose_results = ""
     # preprocess prefix 
     pre_prefix = smart_compose_processing(prefix) # clean and preprocess the new user prefix
-    words_match = predict(pre_prefix) # get matched sentences from the Trie
-    return words_match
+    last_word = pre_prefix.split()[-1] if pre_prefix != "" else ""
+    final_output, call_smart_compose = spell_check(last_word, nb_suggs)
+    if call_smart_compose:
+        smart_compose_results = predict(pre_prefix)
+    # add the samrt compose
+    final_output['smart_compose'] = smart_compose_results
+    return final_output
 
 
 
